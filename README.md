@@ -100,7 +100,7 @@ Create a `.env` file in the project root:
 
 ```env
 PORT=8080
-DB_URL=mongodb://127.0.0.1:27017/sport-nest
+MONGODB_URI=mongodb://127.0.0.1:27017/sport-nest
 FRONTEND_URL=http://localhost:3000
 NODE_ENV=development
 ```
@@ -249,7 +249,7 @@ POST /bookings
 3. Set **Build Command**: `npm install`
 4. Set **Start Command**: `npm start`
 5. Add environment variables in Render dashboard:
-   - `DB_URL` — your MongoDB Atlas connection string
+   - `MONGODB_URI` — your MongoDB Atlas connection string
    - `FRONTEND_URL` — your Vercel frontend URL
    - `NODE_ENV` — `production`
 6. Enable **Auto-Deploy** from main branch
