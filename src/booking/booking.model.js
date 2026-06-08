@@ -7,7 +7,7 @@ const bookingSchema = new mongoose.Schema(
       ref: "Facility",
       required: true,
     },
-    user_email: { type: String, required: true, lowercase: true, trim: true },
+    owner_email: { type: String, required: true, lowercase: true, trim: true },
     booking_date: { type: String, required: true }, // YYYY-MM-DD
     time_slot: {
       start_time: { type: String, required: true },
