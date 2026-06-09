@@ -1,20 +1,19 @@
 const Facility = require("./facility.model");
 
-// GET /facilities — public, with search & filter (Challenge requirement)
+// GET /facilities — public
 const getFacilities = async (req, res) => {
   try {
-    const { search, facility_type, location } = req.query;
+    const { facility_type, location, min_price, max_price, search } = req.query;
+
     const filter = {};
 
-    if (search) {
-      filter.name = { $regex: search, $options: "i" };
-    }
-    if (facility_type) {
-      const types = facility_type.split(",").map((t) => t.trim().toLowerCase());
-      filter.facility_type = { $in: types };
-    }
-    if (location) {
-      filter.location = { $regex: location, $options: "i" };
+    if (facility_type) filter.facility_type = facility_type;
+    if (location) filter.location = { $regex: location, $options: "i" };
+    if (search) filter.name = { $regex: search, $options: "i" };
+    if (min_price || max_price) {
+      filter.price_per_hour = {};
+      if (min_price) filter.price_per_hour.$gte = Number(min_price);
+      if (max_price) filter.price_per_hour.$lte = Number(max_price);
     }
 
     const facilities = await Facility.find(filter).sort({ createdAt: -1 });
@@ -38,10 +37,10 @@ const getFacility = async (req, res) => {
 // POST /facilities — private
 const createFacility = async (req, res) => {
   try {
-    const facility = await Facility.create({
-      ...req.body,
-      owner_email: req.user.email, // auto-fill from session
-    });
+    const { owner_email } = req.body;
+    if (!owner_email) return res.status(400).json({ message: "owner_email is required" });
+
+    const facility = await Facility.create(req.body);
     res.status(201).json({ success: true, data: facility });
   } catch (err) {
     res.status(400).json({ message: err.message });
@@ -51,10 +50,13 @@ const createFacility = async (req, res) => {
 // PUT /facilities/:id — private, owner only
 const updateFacility = async (req, res) => {
   try {
+    const { owner_email } = req.body;
+    if (!owner_email) return res.status(400).json({ message: "owner_email is required" });
+
     const facility = await Facility.findById(req.params.id);
     if (!facility) return res.status(404).json({ message: "Facility not found" });
 
-    if (facility.owner_email !== req.user.email) {
+    if (facility.owner_email !== owner_email) {
       return res.status(403).json({ message: "Not authorized" });
     }
 
@@ -72,10 +74,13 @@ const updateFacility = async (req, res) => {
 // DELETE /facilities/:id — private, owner only
 const deleteFacility = async (req, res) => {
   try {
+    const { owner_email } = req.body;
+    if (!owner_email) return res.status(400).json({ message: "owner_email is required" });
+
     const facility = await Facility.findById(req.params.id);
     if (!facility) return res.status(404).json({ message: "Facility not found" });
 
-    if (facility.owner_email !== req.user.email) {
+    if (facility.owner_email !== owner_email) {
       return res.status(403).json({ message: "Not authorized" });
     }
 
