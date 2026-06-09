@@ -5,10 +5,15 @@ const bookingRoutes = require("./booking/booking.routes");
 
 const app = express();
 
-app.use(cors({
-  origin: process.env.FRONTEND_URL,
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: [
+      "http://localhost:3000",
+      "https://sport-nest-client.vercel.app",
+    ],
+    credentials: true,
+  })
+);
 
 app.use(express.json());
 
