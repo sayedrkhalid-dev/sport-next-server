@@ -56,7 +56,7 @@ const createBooking = async (req, res) => {
 // GET /bookings/my — private
 const getMyBookings = async (req, res) => {
   try {
-    const bookings = await Booking.find({ user_email: req.user.email })
+    const bookings = await Booking.find({ owner_email: req.user.email })
       .populate("facility_id", "name location image facility_type")
       .sort({ createdAt: -1 });
     res.json({ success: true, data: bookings });
